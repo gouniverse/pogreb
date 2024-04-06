@@ -70,6 +70,17 @@ if err != nil {
 log.Printf("%s", val)
 ```
 
+### Deleting from a database
+
+Use the `DB.Delete()` function to delete a key-value pair:
+
+```go
+err := db.Delete([]byte("testKey"))
+if err != nil {
+	log.Fatal(err)
+}
+```
+
 ### Iterating over items
 
 To iterate over items, use `ItemIterator` returned by `DB.Items()`:
@@ -100,3 +111,7 @@ on DigitalOcean 8 CPUs / 16 GB RAM / 160 GB SSD + Ubuntu 16.04.3 (higher is bett
 ## Internals
 
 [Design document](/docs/design.md).
+
+## Limitations
+
+The design choices made to optimize for point lookups bring limitations for other potential use-cases. For example, using a hash table for indexing makes range scans impossible. Additionally, having a single hash table shared across all WAL segments makes the recovery process require rebuilding the entire index, which may be impractical for large databases.
